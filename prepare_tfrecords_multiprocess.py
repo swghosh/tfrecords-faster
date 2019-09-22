@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-WORKERS = 7
+WORKERS = 4
 
-dataset_path = './MegaFace_final/train'
-tfrecs_path = 'gs://shrill-anstett-us/MegaFace_final_tfrecs/train'
-shard_size = 5000
+dataset_path = './facescrub/FaceScrub_final2/train'
+tfrecs_path = 'gs://shrill-anstett-us/FaceScrub_final_tfrecs/train'
+shard_size = 12000
 
 n_samples = None
 
@@ -18,6 +18,8 @@ def init_task():
     tf = tensorflow()
     image_paths = tf.io.gfile.glob(dataset_path + '/*/*.jpg')
     batch_size = len(image_paths) // WORKERS
+    if len(image_paths) % WORKERS != 0:
+        batch_size += 1
     image_paths_batched = [
         image_paths[index * batch_size: (index + 1) * batch_size]
         for index in range(WORKERS)
