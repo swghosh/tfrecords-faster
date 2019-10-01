@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
-WORKERS = 4
+import os
+WORKERS = os.cpu_count()
+print("Using %d workers." % WORKERS)
 
-dataset_path = './facescrub/FaceScrub_final2/train'
-tfrecs_path = 'gs://shrill-anstett-us/FaceScrub_final_tfrecs/train'
+dataset_path = './dataset/train'
+tfrecs_path = 'gs://bucket-name/dataset'
 shard_size = 12000
 
 n_samples = None
@@ -73,7 +75,9 @@ image_paths_batched = init_task()
 inputs = [(index, batch) for index, batch in enumerate(image_paths_batched)]
 
 import multiprocessing
-with multiprocessing.Pool(WORKERS) as pool:
-    pool.map(task, inputs)
 
-print('All workers exited')
+if __name__ == '__main__':
+    with multiprocessing.Pool(WORKERS) as pool:
+        pool.map(task, inputs)
+
+    print('All workers exited')
